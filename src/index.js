@@ -1,7 +1,7 @@
 import { fetchBreeds, fetchCatByBreed } from './cat-api';
 
 import SlimSelect from 'slim-select';
-import Notiflix, { Loading } from 'notiflix';
+import Notiflix from 'notiflix';
 import 'slim-select/dist/slimselect.css';
 
 const errorText = document.querySelector('.error');
@@ -45,3 +45,68 @@ const select = new SlimSelect({
     },
   },
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  requestStart();
+  fetchBreeds()
+    .then(breeds => renderBreeds(breeds))
+    .catch(error => handleFetchError(error));
+});
+
+const renderBreeds = cats => {
+  const arrSelected = [
+    { text: '', placeholder: true },
+    ...cats.map(cat => ({ text: cat.name, value: cat.id })),
+  ];
+  select.setData(arrSelected);
+  requestFinish();
+};
+
+const renderCats = cats => {
+  if (cats.length > 0) {
+    const markup = cats
+      .map(
+        cat => `<div class="card-container"><div class="img-container">
+                <img class="cat-img" src="${cat.url}" /></div>
+                <div class="text-container">
+                <h1 class="cat-title">${cat.breeds[0].name}</h1>
+                <p class="cat-desc-sub">${cat.breeds[0].temperament}</p>
+                <p class="cat-desc">${cat.breeds[0].description}</p></div></div>`
+      )
+      .join('');
+
+    catInfo.insertAdjacentHTML('afterbegin', markup);
+  } else {
+    Notify.failure(`${errorText.textContent}`);
+  }
+  requestFinish();
+};
+
+const handleFetchError = error => {
+  error = Notify.failure(`${errorText.textContent}`);
+  requestWrong();
+};
+
+const removeChildren = container => {
+  while (container.firstChild) {
+    container.removeChild(container.firstChild);
+  }
+};
+
+const requestStart = () => {
+  loader.classList.remove('visually-hidden');
+  breedSelect.classList.add('visually-hidden');
+  catInfo.classList.add('visually-hidden');
+};
+
+const requestFinish = () => {
+  loader.classList.add('visually-hidden');
+  breedSelect.classList.remove('visually-hidden');
+  catInfo.classList.remove('visually-hidden');
+};
+
+const requestWrong = () => {
+  loader.classList.add('visually-hidden');
+  breedSelect.classList.add('visually-hidden');
+  catInfo.classList.add('visually-hidden');
+};
