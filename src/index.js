@@ -77,13 +77,13 @@ const renderCats = cats => {
 
     catInfo.insertAdjacentHTML('afterbegin', markup);
   } else {
-    Notify.failure(`${errorText.textContent}`);
+    Notiflix.Notify.failure(`${errorText.textContent}`);
   }
   requestFinish();
 };
 
 const handleFetchError = error => {
-  error = Notify.failure(`${errorText.textContent}`);
+  error = Notiflix.Notify.failure.failure(`${errorText.textContent}`);
   requestWrong();
 };
 
